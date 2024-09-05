@@ -1,0 +1,23 @@
+/* DataVisualizer.css */
+
+.data-visualizer {
+    padding: 16px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background: #fff;
+    margin-top: 16px;
+}
+
+.data-visualizer .ant-tree {
+    margin-bottom: 16px;
+}
+
+.data-visualizer .ant-table {
+    margin-bottom: 16px;
+}
+
+.data-visualizer p {
+    color: #ff4d4f;
+    font-weight: bold;
+    text-align: center;
+}
