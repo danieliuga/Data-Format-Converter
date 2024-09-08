@@ -30,10 +30,8 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
               message.error('Invalid CSV');
             }
           } else if (fileType === 'xml') {
-            // XML validation can be added here
             onFileUpload(text, 'xml');
           } else if (fileType === 'yaml') {
-            // YAML validation can be added here
             onFileUpload(text, 'yaml');
           } else if (fileType === 'xlsx') {
             onFileUpload(text, 'xlsx');

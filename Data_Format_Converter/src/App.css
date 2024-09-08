@@ -444,16 +444,3 @@ button:disabled {
   background-color: #ccc;
   cursor: not-allowed;
 }
-
-
-/*
-
-2. Soporte para Más Formatos de Archivo
-XML, YAML, Excel: Agrega soporte para formatos adicionales como YAML, Excel (XLSX), 
-o incluso formatos de base de datos como SQLite. Esto puede requerir bibliotecas 
-adicionales y parsers específicos para cada formato.
-Validación de Datos: Implementa validación para diferentes tipos de datos 
-(por ejemplo, chequear si un CSV tiene las columnas correctas o si un JSON 
-está bien formado).
-
-*/

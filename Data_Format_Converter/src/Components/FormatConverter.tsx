@@ -1,8 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { convertJsonToCsv, convertCsvToJson, convertXmlToJson, convertJsonToXml, convertCsvToXml, convertXmlToCsv, convertJsonToXlsx } from '../Utils/converters';
+import {
+    convertJsonToCsv,
+    convertCsvToJson,
+    convertXmlToJson,
+    convertJsonToXml,
+    convertCsvToXml,
+    convertYamlToJson,
+    convertYamlToXml,
+    convertJsonToYaml,
+    convertXmlToYaml,
+    convertCsvToYaml,
+} from '../Utils/converters';
 
 interface FormatConverterProps {
-    fileContent: string;
+    fileContent: string | ArrayBuffer;
     fileType: string;
     onConversion: (result: string) => void;
     onTargetFormatChange: (targetFormat: string) => void;
@@ -15,21 +26,50 @@ const FormatConverter: React.FC<FormatConverterProps> = ({ fileContent, fileType
         onTargetFormatChange(targetFormat);
     }, [targetFormat, onTargetFormatChange]);
 
-    const handleConversion = () => {
+    const handleConversion = async () => {
         try {
-            let result = '';
+            let result: string | ArrayBuffer = '';
             if (fileType === 'json') {
-                if (targetFormat === 'csv') result = convertJsonToCsv(fileContent);
-                else if (targetFormat === 'xml') result = convertJsonToXml(fileContent);
-                else if (targetFormat === 'xlsx') result = convertJsonToXlsx(fileContent);
+                if (targetFormat === 'csv') {
+                    result = convertJsonToCsv(fileContent as string);
+                } else if (targetFormat === 'xml') {
+                    result = convertJsonToXml(fileContent as string);
+                } else if (targetFormat === 'yaml') {
+                    result = convertJsonToYaml(fileContent as string);
+                }
+
             } else if (fileType === 'csv') {
-                if (targetFormat === 'json') result = convertCsvToJson(fileContent);
-                else if (targetFormat === 'xml') result = convertCsvToXml(fileContent);
+                if (targetFormat === 'json') {
+                    const jsonResult = convertCsvToJson(fileContent as string);
+                    result = JSON.stringify(jsonResult, null, 2);
+                } else if (targetFormat === 'xml') {
+                    result = convertCsvToXml(fileContent as string);
+                } else if (targetFormat === 'yaml') {
+                    result = convertCsvToYaml(fileContent as string);
+                }
+
             } else if (fileType === 'xml') {
-                if (targetFormat === 'json') result = convertXmlToJson(fileContent);
-                else if (targetFormat === 'csv') result = convertXmlToCsv(fileContent);
+                if (targetFormat === 'json') {
+                    result = convertXmlToJson(fileContent as string);
+                } else if (targetFormat === 'csv') {
+                    const jsonResult = convertXmlToJson(fileContent as string);                    
+                    result = convertJsonToCsv(jsonResult);
+                } else if (targetFormat === 'yaml') {
+                    result = await convertXmlToYaml(fileContent as string);
+                }
+
+            } else if (fileType === 'yaml' || fileType === 'yml') {
+                if (targetFormat === 'json') {
+                    result = convertYamlToJson(fileContent as string);
+                } else if (targetFormat === 'xml') {
+                    result = await convertYamlToXml(fileContent as string);
+                } else if (targetFormat === 'csv') {
+                    const jsonResult = convertYamlToJson(fileContent as string);
+                    result = convertJsonToCsv(jsonResult);
+                }
             }
-            onConversion(result);
+
+            onConversion(result as string);
 
         } catch (error) {
             console.error('Error during conversion:', error);
@@ -43,7 +83,7 @@ const FormatConverter: React.FC<FormatConverterProps> = ({ fileContent, fileType
                 <option value="json">JSON</option>
                 <option value="csv">CSV</option>
                 <option value="xml">XML</option>
-                <option value="xlsx">Excel (XLSX)</option>
+                <option value="yaml">YAML</option>
             </select>
             <button
                 onClick={handleConversion}

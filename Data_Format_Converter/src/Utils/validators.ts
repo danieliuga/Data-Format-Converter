@@ -1,19 +1,25 @@
-import Papa from 'papaparse';
-
 export const validateCSV = (csvText: string): boolean => {
-  let isValid = true;
-  Papa.parse(csvText, {
-    header: true,
-    skipEmptyLines: true,
-    complete: (results) => {
-      console.log('Parsed Results:', results);
-      // Implement validation logic here
-    },
-    error: () => {
-      isValid = false;
-    }
-  });
-  return isValid;
+  // if (!csvText.trim()) return false;
+
+  // const rows = csvText.split('\n').map(row => row.trim()).filter(row => row.length > 0);
+
+  // if (rows.length < 2) return false;
+
+  // const headers = rows[0].split(',');
+
+  // if (headers.length === 0 || headers.includes('')) return false;
+
+  // const csvPattern = /^[\w\s\d,.-]+$/;
+
+  // for (let i = 1; i < rows.length; i++) {
+  //   const row = rows[i].split(',');
+
+  //   if (row.length !== headers.length) return false;
+
+  //   if (!csvPattern.test(rows[i])) return false;
+  // }
+
+  return true;
 };
 
 export const validateJSON = (jsonText: string): boolean => {

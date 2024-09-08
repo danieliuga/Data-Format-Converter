@@ -5,10 +5,10 @@ const Assistant: React.FC<{ isVisible: boolean; onClose: () => void }> = ({ isVi
     const [step, setStep] = useState(0);
 
     const steps = [
-        'Step 1: Selecciona el formato de archivo de origen.',
-        'Step 2: Sube tu archivo utilizando el botón "Seleccionar Archivo".',
-        'Step 1: Selecciona el formato de archivo de origen destino.',
-        'Step 3: Revisa la vista previa del archivo antes de convertirlo.',
+        'Step 1: Select the source file format.',
+        'Step 2: Upload your file using the "Select File" button.',
+        'Step 1: Select the source destination file format.',
+        'Step 3: Check the file preview before converting.',
         'Step 4: Download or copy the converted file.'
     ];
 
