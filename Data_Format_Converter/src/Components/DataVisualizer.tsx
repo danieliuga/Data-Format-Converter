@@ -82,7 +82,6 @@ const DataVisualizer: React.FC<DataVisualizerProps> = ({ data, dataType, onDataC
     );
 };
 
-// Función para convertir JSON a una estructura de árbol.
 const convertJsonToTree = (jsonData: any): TreeNode[] => {
     if (Array.isArray(jsonData)) {
         return jsonData.map((item, index) => ({
@@ -103,7 +102,6 @@ const convertJsonToTree = (jsonData: any): TreeNode[] => {
     }
 };
 
-// Función para generar columnas de tabla desde datos CSV.
 const generateTableColumns = (rows: any[]): { title: string; dataIndex: string; key: string }[] => {
     if (rows.length === 0) return [];
     return Object.keys(rows[0]).map((key) => ({
@@ -113,7 +111,6 @@ const generateTableColumns = (rows: any[]): { title: string; dataIndex: string; 
     }));
 };
 
-// Función para convertir XML a una estructura de árbol.
 const convertXmlToJsonTree = (xmlDoc: Document): TreeNode[] => {
     const traverseNode = (node: Element): TreeNode => {
         const children: TreeNode[] = Array.from(node.children).map(traverseNode);

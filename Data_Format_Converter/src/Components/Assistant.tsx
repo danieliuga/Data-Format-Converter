@@ -18,7 +18,7 @@ const Assistant: React.FC<{ isVisible: boolean; onClose: () => void }> = ({ isVi
     return (
         <Modal
             title="Conversion Assitant"
-            visible={isVisible}
+            open={isVisible}
             onCancel={onClose}
             footer={null}
         >

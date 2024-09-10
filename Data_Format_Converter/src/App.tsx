@@ -7,24 +7,6 @@ import DataVisualizer from './Components/DataVisualizer';
 import Assistant from './Components/Assistant';
 import './App.css';
 
-// los conversores probarlos porque no funcionan todos muy bien
-// conversor json to csv:- si funciona
-// conversor json to xml:- si funciona -> si o si
-// conversor xml to json:- si funciona -> si o si
-// conversor csv to json:- si funciona -> si o si
-// conversor csv to xml:- si funciona
-// conversor yaml to json:- si funciona -> si o si
-// conversor yaml to xml:- si funciona -> si o si
-
-// conversor xml to csv:- no funciona
-
-// conversor xlsx to csv:- no funciona -> si o si
-// conversor json to xlsx:- no funciona
-// conversor xml to xlsx:- no funciona
-// conversor csv to xlsx:- no funciona
-// conversor xlsx to json:- no funciona
-// conversor xlsx to xml:- no funciona
-
 const App: React.FC = () => {
   const [fileContent, setFileContent] = useState<string>('');
   const [fileType, setFileType] = useState<string>('');
@@ -97,7 +79,6 @@ const App: React.FC = () => {
           {fileContent && (
             <div className="fileData">
               <pre>{fileContent}</pre>
-              {/* <DataVisualizer data={fileContent} dataType={fileType} onDataChange={handleDataChange} /> */}
             </div>
           )}
         </div>
@@ -119,14 +100,13 @@ const App: React.FC = () => {
           {convertedOutput && (
             <div className='convertedData'>
               <OutputDisplay output={convertedOutput} />
-              {/* <DataVisualizer data={convertedOutput} dataType={downloadType} onDataChange={handleDataChange} /> */}
             </div>
           )}
         </div>
       </div>
       <Modal
         title="Preview"
-        visible={isPopupVisible}
+        open={isPopupVisible}
         onCancel={() => setPopupVisible(false)}
         footer={null}
         width={800}
