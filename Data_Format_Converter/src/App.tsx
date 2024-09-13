@@ -63,6 +63,7 @@ const App: React.FC = () => {
   };
 
   const handleDownload = (content: string, type: string) => {
+    if (!convertedOutput) return;
     const blob = new Blob([content], { type: type === 'json' ? 'application/json' : 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
