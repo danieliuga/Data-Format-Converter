@@ -18,7 +18,7 @@ const App: React.FC = () => {
   const [fileType, setFileType] = useState<string>('');
   const [convertedOutput, setConvertedOutput] = useState<string>('');
   const [downloadType, setDownloadType] = useState<string>('csv');
-  const [previewType, setPreviewType] = useState<'original' | 'converted'>('original');
+  const [previewType] = useState<'original' | 'converted'>('original');
   const [isAssistantVisible, setAssistantVisible] = useState<boolean>(false);
   const [textCopyFile, setTextCopyFile] = useState<string>('Copy');
   const [textCopyConverted, setTextCopyConverted] = useState<string>('Copy');
