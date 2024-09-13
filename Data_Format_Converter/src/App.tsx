@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { Modal, Button } from 'antd';
+import { Button } from 'antd';
 import FileUploader from './Components/FileUploader';
 import FormatConverter from './Components/FormatConverter';
 import OutputDisplay from './Components/OutputDisplay';
 import DataVisualizer from './Components/DataVisualizer';
 import Assistant from './Components/Assistant';
+
+import downloadPNGIcon from '/descargarPNG.png';
+import copiarPNGIcon from '/copiarPNG.png';
+import importFileIcon from '/importFile.png';
+import uploadFileIcon from '/uploadFile.png';
+
 import './App.css';
 
 const App: React.FC = () => {
@@ -12,10 +18,12 @@ const App: React.FC = () => {
   const [fileType, setFileType] = useState<string>('');
   const [convertedOutput, setConvertedOutput] = useState<string>('');
   const [downloadType, setDownloadType] = useState<string>('csv');
-  const [isPopupVisible, setPopupVisible] = useState<boolean>(false);
   const [previewType, setPreviewType] = useState<'original' | 'converted'>('original');
   const [isAssistantVisible, setAssistantVisible] = useState<boolean>(false);
-
+  const [textCopyFile, setTextCopyFile] = useState<string>('Copy');
+  const [textCopyConverted, setTextCopyConverted] = useState<string>('Copy');
+  const [nullContent, setNullContent] = useState<boolean>(true);
+  
   const handleFileUpload = (content: string, type: string) => {
     setFileContent(content);
     setFileType(type);
@@ -25,12 +33,34 @@ const App: React.FC = () => {
     setConvertedOutput(result);
   };
 
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      console.log('Text copied to clipboard!');
-    }).catch(err => {
-      console.error('Failed to copy text: ', err);
-    });
+  const handleCopyFile = () => {
+    if (!fileContent) return;
+    setTextCopyFile('Copied');
+    setTimeout(() => {
+      setTextCopyFile('Copy');
+    }, 5000);
+    navigator.clipboard.writeText(fileContent)
+      .then(() => {
+        console.log('File content copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy file content: ', err);
+      });
+  };
+
+  const handleCopyConverted = () => {
+    if (!convertedOutput) return;
+    setTextCopyConverted('Copied');
+    setTimeout(() => {
+      setTextCopyConverted('Copy');
+    }, 5000);
+    navigator.clipboard.writeText(convertedOutput)
+      .then(() => {
+        console.log('Converted output copied to clipboard!');
+      })
+      .catch(err => {
+        console.error('Failed to copy converted output: ', err);
+      });
   };
 
   const handleDownload = (content: string, type: string) => {
@@ -47,11 +77,6 @@ const App: React.FC = () => {
     setDownloadType(targetFormat);
   };
 
-  const handlePreview = (type: 'original' | 'converted') => {
-    setPreviewType(type);
-    setPopupVisible(true);
-  };
-
   const handleDataChange = (newData: string) => {
     if (previewType === 'original') {
       setFileContent(newData);
@@ -59,6 +84,8 @@ const App: React.FC = () => {
       setConvertedOutput(newData);
     }
   };
+
+  // Testing
 
   return (
     <div className="App">
@@ -71,14 +98,53 @@ const App: React.FC = () => {
         </div>
         <div className="fileContent">
           <div className='fileButtons'>
-            <button onClick={() => handlePreview('original')}>Show Preview</button>
-            <button onClick={() => handleDownload(fileContent, fileType)}>Download</button>
-            <button onClick={() => handleCopy(fileContent)}>Copy</button>
+            <p className='subtitle'>File Content:</p>
+            <div
+              onClick={() => handleDownload(fileContent, fileType)}
+              className='downloadButton'
+              style={{
+                cursor: fileType ? 'pointer' : 'not-allowed',
+                opacity: convertedOutput ? 1 : 0.5,
+                height: '100%',
+                width: '100%' 
+              }}
+            >
+              <img
+                src={downloadPNGIcon}
+                alt='Download'
+                className='imgPhoto'
+              />
+              <p></p>
+            </div>
+            <div
+              onClick={() => handleCopyFile()}
+              className='copyButton'
+              style={{
+                cursor: fileType ? 'pointer' : 'not-allowed',
+                opacity: fileType ? 1 : 0.5,
+              }}
+            >
+              <img
+                src={copiarPNGIcon}
+                alt={textCopyFile}
+                className='imgPhotoCopy'
+                style={{ marginRight: '0.2vmax' }}
+              />
+              <p>{textCopyFile}</p>
+            </div>
           </div>
-          <p className='subtitle'>File Content:</p>
-          {fileContent && (
+          {fileContent ? (
             <div className="fileData">
-              <pre>{fileContent}</pre>
+              <DataVisualizer
+                data={fileContent}
+                dataType={fileType}
+                onDataChange={handleDataChange}
+                isReadOnly='original'
+              />
+            </div>
+          ) : (
+            <div className="placeholder">
+              <img src={uploadFileIcon} alt="No file selected" className="placeholderIcon" />
             </div>
           )}
         </div>
@@ -92,32 +158,57 @@ const App: React.FC = () => {
         </div>
         <div className="convertedOutput">
           <div className='convertedButtons'>
-            <button onClick={() => handlePreview('converted')}>Show Preview</button>
-            <button onClick={() => handleDownload(convertedOutput, downloadType)}>Download</button>
-            <button onClick={() => handleCopy(convertedOutput)}>Copy</button>
+            <p className='subtitle'>Converted Output:</p>
+            <div
+              onClick={() => handleDownload(convertedOutput, downloadType)}
+              className='downloadButton'
+              style={{ 
+                cursor: convertedOutput ? 'pointer' : 'not-allowed',
+                opacity: convertedOutput ? 1 : 0.5 
+              }}
+            >
+              <img
+                src={downloadPNGIcon}
+                alt='Download'
+                className='imgPhoto'
+              />
+            </div>
+            <div
+              onClick={() => handleCopyConverted()}
+              className='copyButton'
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: convertedOutput ? 'pointer' : 'not-allowed',
+                opacity: convertedOutput ? 1 : 0.5,
+              }}
+            >
+              <img
+                src={copiarPNGIcon}
+                alt={textCopyConverted}
+                className='imgPhoto'
+                style={{ marginRight: '0.5vmax' }}
+              />
+              <p>{textCopyConverted}</p>
+            </div>
           </div>
-          <p className='subtitle'>Converted Output:</p>
-          {convertedOutput && (
+          {convertedOutput ? (
             <div className='convertedData'>
               <OutputDisplay output={convertedOutput} />
+              <DataVisualizer
+                data={convertedOutput}
+                dataType={downloadType}
+                onDataChange={handleDataChange}
+                isReadOnly='converted'
+              />
+            </div>
+          ) : (
+            <div className="placeholder">
+              <img src={importFileIcon} alt="No file selected" className="placeholderIcon" />
             </div>
           )}
         </div>
       </div>
-      <Modal
-        title="Preview"
-        open={isPopupVisible}
-        onCancel={() => setPopupVisible(false)}
-        footer={null}
-        width={800}
-      >
-        {previewType === 'original' && fileContent && (
-          <DataVisualizer data={fileContent} dataType={fileType} onDataChange={handleDataChange} />
-        )}
-        {previewType === 'converted' && convertedOutput && (
-          <DataVisualizer data={convertedOutput} dataType={downloadType} onDataChange={handleDataChange} />
-        )}
-      </Modal>
       <Button
         type="primary"
         onClick={() => setAssistantVisible(true)}
@@ -125,10 +216,7 @@ const App: React.FC = () => {
       >
         Assistant
       </Button>
-      <Assistant
-        isVisible={isAssistantVisible}
-        onClose={() => setAssistantVisible(false)}
-      />
+      {isAssistantVisible && <Assistant isVisible={isAssistantVisible} onClose={() => setAssistantVisible(false)} />}
     </div>
   );
 };

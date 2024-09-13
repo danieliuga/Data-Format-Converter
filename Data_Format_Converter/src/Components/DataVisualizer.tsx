@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
 import { Tree, Table, Input } from 'antd';
 import * as d3 from 'd3';
 import './DataVisualizer.css';
@@ -7,6 +7,7 @@ interface DataVisualizerProps {
     data: string;
     dataType: string;
     onDataChange: (newData: string) => void;
+    isReadOnly: 'original' | 'converted';
 }
 
 interface TreeNode {
@@ -15,9 +16,13 @@ interface TreeNode {
     children?: TreeNode[];
 }
 
-const DataVisualizer: React.FC<DataVisualizerProps> = ({ data, dataType, onDataChange }) => {
+const DataVisualizer: React.FC<DataVisualizerProps> = ({ data, dataType, onDataChange, isReadOnly }) => {
     const [editableData, setEditableData] = useState<string>(data);
     const [searchTerm, setSearchTerm] = useState<string>('');
+
+    useEffect(() => {
+        setEditableData(data);
+    }, [data]);
 
     const handleDataChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setEditableData(e.target.value);
@@ -35,24 +40,24 @@ const DataVisualizer: React.FC<DataVisualizerProps> = ({ data, dataType, onDataC
 
     const renderCsv = (data: string) => {
         try {
-          const rows = d3.csvParse(data);
-          const filteredRows = rows.filter(row =>
-            Object.values(row).some(value => value.includes(searchTerm))
-          );
-          return (
-            <>
-              <Input
-                placeholder="Buscar..."
-                value={searchTerm}
-                onChange={(e: any) => setSearchTerm(e.target.value)}
-              />
-              <Table dataSource={filteredRows} columns={generateTableColumns(filteredRows)} />
-            </>
-          );
+            const rows = d3.csvParse(data);
+            const filteredRows = rows.filter(row =>
+                Object.values(row).some(value => value.includes(searchTerm))
+            );
+            return (
+                <>
+                    <Input
+                        placeholder="Buscar..."
+                        value={searchTerm}
+                        onChange={(e: any) => setSearchTerm(e.target.value)}
+                    />
+                    <Table dataSource={filteredRows} columns={generateTableColumns(filteredRows)} />
+                </>
+            );
         } catch (error) {
-          return <p>Error al parsear CSV</p>;
+            return <p>Error al parsear CSV</p>;
         }
-      };
+    };
 
     const renderXml = (data: string) => {
         try {
@@ -66,20 +71,30 @@ const DataVisualizer: React.FC<DataVisualizerProps> = ({ data, dataType, onDataC
 
     if (!data) return null;
 
+    console.log('isreadonly: ' + isReadOnly);
+
+
     return (
         <div className="data-visualizer">
-            <Input.TextArea
-                value={editableData}
-                onChange={handleDataChange}
-                rows={10}
-            />
-            <div>
-                {dataType === 'json' && renderJson(editableData)}
-                {dataType === 'csv' && renderCsv(editableData)}
-                {dataType === 'xml' && renderXml(editableData)}
-            </div>
+            {dataType !== 'yaml' && (
+                <>
+                    {isReadOnly === 'original' && (
+                        <Input.TextArea
+                            value={editableData}
+                            onChange={handleDataChange}
+                            rows={10}
+                        />
+                    )}
+                    <h2>Tree Map</h2>
+                    <div>
+                        {dataType === 'json' && renderJson(isReadOnly === 'original' ? editableData : data)}
+                        {dataType === 'csv' && renderCsv(isReadOnly === 'original' ? editableData : data)}
+                        {dataType === 'xml' && renderXml(isReadOnly === 'original' ? editableData : data)}
+                    </div>
+                </>
+            )}
         </div>
-    );
+    );    
 };
 
 const convertJsonToTree = (jsonData: any): TreeNode[] => {

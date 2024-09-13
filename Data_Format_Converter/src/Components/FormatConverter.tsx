@@ -19,78 +19,78 @@ interface FormatConverterProps {
     onTargetFormatChange: (targetFormat: string) => void;
 }
 
+const convertFile = async (fileContent: string | ArrayBuffer, fileType: string, targetFormat: string): Promise<string> => {
+    const contentString = typeof fileContent === 'string' 
+        ? fileContent 
+        : new TextDecoder().decode(fileContent);
+
+    try {
+        if (fileType === 'json') {
+            if (targetFormat === 'csv') {
+                return convertJsonToCsv(contentString);
+            } else if (targetFormat === 'xml') {
+                return convertJsonToXml(contentString);
+            } else if (targetFormat === 'yaml') {
+                return convertJsonToYaml(contentString);
+            }
+        } else if (fileType === 'csv') {
+            if (targetFormat === 'json') {
+                return JSON.stringify(convertCsvToJson(contentString), null, 2);
+            } else if (targetFormat === 'xml') {
+                return convertCsvToXml(contentString);
+            } else if (targetFormat === 'yaml') {
+                return convertCsvToYaml(contentString);
+            }
+        } else if (fileType === 'xml') {
+            if (targetFormat === 'json') {
+                return convertXmlToJson(contentString);
+            } else if (targetFormat === 'csv') {
+                return convertJsonToCsv(convertXmlToJson(contentString));
+            } else if (targetFormat === 'yaml') {
+                return await convertXmlToYaml(contentString);
+            }
+        } else if (fileType === 'yaml' || fileType === 'yml') {
+            if (targetFormat === 'json') {
+                return convertYamlToJson(contentString);
+            } else if (targetFormat === 'xml') {
+                return await convertYamlToXml(contentString);
+            } else if (targetFormat === 'csv') {
+                return convertJsonToCsv(convertYamlToJson(contentString));
+            }
+        }
+        throw new Error('Unsupported conversion');
+    } catch (error) {
+        console.error('Error during conversion:', error);
+        return 'Error during conversion';
+    }
+};
+
 const FormatConverter: React.FC<FormatConverterProps> = ({ fileContent, fileType, onConversion, onTargetFormatChange }) => {
     const [targetFormat, setTargetFormat] = useState<string>('csv');
+
+    const formats = ['json', 'csv', 'xml', 'yaml'];
+
+    const availableFormats = formats.filter((format) => format !== fileType);
 
     useEffect(() => {
         onTargetFormatChange(targetFormat);
     }, [targetFormat, onTargetFormatChange]);
 
-    const handleConversion = async () => {
-        try {
-            let result: string | ArrayBuffer = '';
-            if (fileType === 'json') {
-                if (targetFormat === 'csv') {
-                    result = convertJsonToCsv(fileContent as string);
-                } else if (targetFormat === 'xml') {
-                    result = convertJsonToXml(fileContent as string);
-                } else if (targetFormat === 'yaml') {
-                    result = convertJsonToYaml(fileContent as string);
-                }
-
-            } else if (fileType === 'csv') {
-                if (targetFormat === 'json') {
-                    const jsonResult = convertCsvToJson(fileContent as string);
-                    result = JSON.stringify(jsonResult, null, 2);
-                } else if (targetFormat === 'xml') {
-                    result = convertCsvToXml(fileContent as string);
-                } else if (targetFormat === 'yaml') {
-                    result = convertCsvToYaml(fileContent as string);
-                }
-
-            } else if (fileType === 'xml') {
-                if (targetFormat === 'json') {
-                    result = convertXmlToJson(fileContent as string);
-                } else if (targetFormat === 'csv') {
-                    const jsonResult = convertXmlToJson(fileContent as string);                    
-                    result = convertJsonToCsv(jsonResult);
-                } else if (targetFormat === 'yaml') {
-                    result = await convertXmlToYaml(fileContent as string);
-                }
-
-            } else if (fileType === 'yaml' || fileType === 'yml') {
-                if (targetFormat === 'json') {
-                    result = convertYamlToJson(fileContent as string);
-                } else if (targetFormat === 'xml') {
-                    result = await convertYamlToXml(fileContent as string);
-                } else if (targetFormat === 'csv') {
-                    const jsonResult = convertYamlToJson(fileContent as string);
-                    result = convertJsonToCsv(jsonResult);
-                }
-            }
-
-            onConversion(result as string);
-
-        } catch (error) {
-            console.error('Error during conversion:', error);
-            onConversion('Error during conversion');
+    useEffect(() => {
+        if (fileContent && fileType) {
+            convertFile(fileContent, fileType, targetFormat).then(onConversion);
         }
-    };
+    }, [fileContent, fileType, targetFormat, onConversion]);
 
     return (
         <div>
             <select value={targetFormat} onChange={(e) => setTargetFormat(e.target.value)}>
-                <option value="json">JSON</option>
-                <option value="csv">CSV</option>
-                <option value="xml">XML</option>
-                <option value="yaml">YAML</option>
+                {availableFormats.map((format) => (
+                    <option key={format} value={format}>
+                        {format.toUpperCase()}
+                    </option>
+                ))}
             </select>
-            <button
-                onClick={handleConversion}
-                disabled={!fileContent}
-            >
-                Convert
-            </button>
         </div>
     );
 };

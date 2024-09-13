@@ -1,35 +1,41 @@
-import React, { useState } from 'react';
-import { Modal } from 'antd';
+import React, { useEffect, useRef } from 'react';
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 
 const Assistant: React.FC<{ isVisible: boolean; onClose: () => void }> = ({ isVisible, onClose }) => {
-    const [step, setStep] = useState(0);
+    const driverRef = useRef<any>(null);
 
-    const steps = [
-        'Step 1: Select the source file format.',
-        'Step 2: Upload your file using the "Select File" button.',
-        'Step 1: Select the source destination file format.',
-        'Step 3: Check the file preview before converting.',
-        'Step 4: Download or copy the converted file.'
-    ];
+    useEffect(() => {
+        if (isVisible) {
+            driverRef.current = driver({
+                animate: true,
+                showProgress: true,
+                showButtons: ['next', 'previous', 'close'],
+                
+                steps: [
+                    { element: '.uploadFile', popover: { title: 'Step 1', description: 'Select the source file format.', side: "left", align: 'start' } },
+                    { element: '.uploadFile', popover: { title: 'Step 2', description: 'Upload your file using the "Select File" button.', side: "bottom", align: 'start' } },
+                    { element: '.formatConverter', popover: { title: 'Step 3', description: 'Select the source destination file format.', side: "bottom", align: 'start' } },
+                    { element: '.convertedOutput', popover: { title: 'Step 4', description: 'Check the file preview before copying or downloading.', side: "left", align: 'start' } },
+                    { element: '.downloadButton', popover: { title: 'Step 5', description: 'Download the file.', side: "top", align: 'start' } },
+                    { element: '.copyButton', popover: { title: 'Step 6', description: 'Copy the text of the file.', side: "right", align: 'start' } },
+                    { popover: { title: 'Step 7', description: 'And that is all, go ahead and enjoy the Data Format Converter by Daniel Iuga.' } }
+                ],
+            });
 
-    const nextStep = () => setStep(step + 1);
-    const prevStep = () => setStep(step - 1);
+            driverRef.current.drive();
 
-    return (
-        <Modal
-            title="Conversion Assitant"
-            open={isVisible}
-            onCancel={onClose}
-            footer={null}
-        >
-            <p>{steps[step]}</p>
-            <div>
-                <button onClick={prevStep} disabled={step === 0}>Previous</button>
-                <button onClick={nextStep} disabled={step === steps.length - 1} style={{ marginLeft: 8 }}>Next</button>
-                <button onClick={onClose} style={{ marginLeft: 8 }}>Close</button>
-            </div>
-        </Modal>
-    )
-}
+            return () => {
+                driverRef.current?.destroy();
+                driverRef.current = null;
+            };
+        } else {
+            driverRef.current?.destroy();
+        }
+
+    }, [isVisible]);
+
+    return null;
+};
 
 export default Assistant;

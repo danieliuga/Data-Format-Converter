@@ -6,12 +6,21 @@ interface FileUploaderProps {
   onFileUpload: (fileContent: string, fileType: string) => void;
 }
 
+const MAX_FILE_SIZE_MB = 5;
+
 const FileUploader: React.FC<FileUploaderProps> = ({ onFileUpload }) => {
   const [fileType, setFileType] = useState<string>('json');
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
+
+      const fileSizeMB = file.size / (1024 * 1024);
+      if (fileSizeMB > MAX_FILE_SIZE_MB) {
+        message.error(`File size exceeds ${MAX_FILE_SIZE_MB} MB.`);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = async (e) => {
         const text = e.target?.result as string;
