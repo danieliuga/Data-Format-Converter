@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { driver } from "driver.js";
 import "driver.js/dist/driver.css";
 
-const Assistant: React.FC<{ isVisible: boolean; onClose: () => void }> = ({ isVisible, onClose }) => {
+const Assistant: React.FC<{ isVisible: boolean; onClose: () => void }> = ({ isVisible }) => {
     const driverRef = useRef<any>(null);
 
     useEffect(() => {

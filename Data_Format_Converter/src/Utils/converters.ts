@@ -12,13 +12,11 @@ export const convertJsonToCsv = (jsonContent: string) => {
     try {
         let jsonData = typeof jsonContent === 'string' ? JSON.parse(jsonContent) : jsonContent;
 
-        // Convertir un objeto individual a un array de un solo objeto
         if (typeof jsonData === 'object' && !Array.isArray(jsonData)) {
             const firstArray = Object.values(jsonData).find(value => Array.isArray(value));
             if (firstArray) {
                 jsonData = firstArray;
             } else {
-                // Si no hay arrays, lo convierte en un array de un solo objeto
                 jsonData = [jsonData];
             }
         }

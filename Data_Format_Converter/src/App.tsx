@@ -22,7 +22,6 @@ const App: React.FC = () => {
   const [isAssistantVisible, setAssistantVisible] = useState<boolean>(false);
   const [textCopyFile, setTextCopyFile] = useState<string>('Copy');
   const [textCopyConverted, setTextCopyConverted] = useState<string>('Copy');
-  const [nullContent, setNullContent] = useState<boolean>(true);
   
   const handleFileUpload = (content: string, type: string) => {
     setFileContent(content);
@@ -84,8 +83,6 @@ const App: React.FC = () => {
       setConvertedOutput(newData);
     }
   };
-
-  // Testing
 
   return (
     <div className="App">
